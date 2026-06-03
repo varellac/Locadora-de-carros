@@ -12,20 +12,25 @@
 <fieldset>
 <?php
 include ("conexao.php");
-try{
-	$cod_carro = $_POST['cmb_carro'];
-	$sql = "UPDATE cliente set carro_cliente=25 WHERE carro_cliente='$cod_carro'";
-	$conn->query($sql);
-}catch(PDOException $ex){
-	echo 'Erro '. $ex->getMessage();
+include_once __DIR__ . '/csrf.php';
+$token = $_POST['csrf_token'] ?? '';
+if (!csrf_check($token)) {
+	echo '<h4>Requisição inválida (token CSRF).</h4>';
+	exit;
 }
-try{	
-	$sql = "DELETE FROM carro WHERE cod_carro='$cod_carro'";
-	$conn->query($sql);
-    echo "<h4>carro excluido com sucesso</h4>
-    <h3><a href='/locadora_m31'>Voltar</a></h3>";
+try{
+	$cod_carro = filter_input(INPUT_POST, 'cmb_carro', FILTER_VALIDATE_INT);
+	if ($cod_carro === false || $cod_carro === null) {
+		echo '<h4>Carro inválido.</h4>';
+		exit;
+	}
+	$del = $conn->prepare('DELETE FROM carro WHERE cod_carro = :id');
+	$del->execute([':id' => $cod_carro]);
+	echo '<h4>Carro excluído com sucesso</h4>';
+	echo '<h3><a href="/locadora_m8">Voltar</a></h3>';
 }catch(PDOException $ex){
-	echo 'Erro '. $ex->getMessage();
+	error_log('del_carro error: ' . $ex->getMessage());
+	echo '<h4>Ocorreu um erro. Contate o administrador.</h4>';
 }
 ?>
 </fieldset></div></div></body></html>

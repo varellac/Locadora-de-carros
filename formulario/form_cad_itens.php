@@ -12,7 +12,9 @@
 <div class="flex-container">
 <div id="box">
 <fieldset>	
+<?php include __DIR__ . '/../controle/csrf.php'; ?>
 <form method="POST" action="../consulta/con_carros.php">
+	<?php echo csrf_input(); ?>
 	<input type="text" name="txt_carro">
 	<input type="submit" value="Carros">
 </form></fieldset></div></div></body></html>

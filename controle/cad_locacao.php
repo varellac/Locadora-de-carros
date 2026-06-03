@@ -14,16 +14,33 @@
 <fieldset>
 <?php
 include("conexao.php");
+include_once __DIR__ . '/csrf.php';
+$token = $_POST['csrf_token'] ?? '';
+if (!csrf_check($token)) {
+    echo '<h4>Requisição inválida (token CSRF).</h4>';
+    exit;
+}
 try{
-    $var_cliente=$_POST['cmb_cliente'];
-    $var_data=$_POST['txt_data'];
-    $var_data=DATE($var_data);
-    $sql="INSERT INTO locacao(cliente_locacao,data_locacao) VALUES ('$var_cliente','$var_data')";
-    $conn->query($sql);
-    echo "<h4>Locação inicializada</h4>
-        <h3><a href='../formulario/form_cad_itens.php'>Selecione os Veiculos</a></h3>";    
+    $var_cliente = filter_input(INPUT_POST, 'cmb_cliente', FILTER_VALIDATE_INT);
+    $var_data = isset($_POST['txt_data']) ? trim($_POST['txt_data']) : null;
+    if ($var_cliente === false || $var_data === null) {
+        echo '<h4>Dados inválidos.</h4>';
+    } else {
+        $stmt = $conn->prepare('INSERT INTO locacao (cliente_locacao, data_locacao, data_devolucao) VALUES (:cliente, :data, :devolucao)');
+        // set data_devolucao same as data or NULL if not provided; original schema requires both — adjust as needed
+        $stmt->execute([':cliente' => $var_cliente, ':data' => $var_data, ':devolucao' => $var_data]);
+        // store current locacao in session to avoid race conditions
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $lastId = (int)$conn->lastInsertId();
+        $_SESSION['current_locacao'] = $lastId;
+        echo '<h4>Locação inicializada (ID: ' . $lastId . ')</h4>';
+        echo '<h3><a href="../formulario/form_cad_itens.php">Selecione os Veículos</a></h3>';
+    }
 }catch(PDOException $ex){
-    echo "Erro ".$ex->getMessage();
+    error_log('cad_locacao error: ' . $ex->getMessage());
+    echo '<h4>Ocorreu um erro. Contate o administrador.</h4>';
 }
 ?>
 </fieldset></div></div></body></html>

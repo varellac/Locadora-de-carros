@@ -1,31 +1,42 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
-    <title>Projeto Locadora</title>
-	<link rel="stylesheet" type="text/css" href="../estilo/geral.css">    
-</head>
-<body>
-<h1>Seleção de veículos</h1>
-<div class="flex-container">
-<div id="box">
-<fieldset>
 <?php
-include("conexao.php");
-try{
-    $item=$_POST['item'];
-    $sql="SELECT cod_locacao FROM locacao ORDER BY cod_locacao DESC LIMIT 1";
-    foreach($conn->query($sql) as $row){
-        $codloc=$row['cod_locacao'];
-    }
-    $sql="INSERT INTO carros_locacao(carro_locado,locacao) VALUES ('$item',$codloc)";
-    $conn->query($sql);
-    echo "<h4>Item incluido com sucesso</h4>
-        <h3><a href='/locadora_m8/formulario/form_cad_itens.php'>Selecionar outro veículo</a></h3><br>
-        <h3><a href='/locadora_m8/formulario/cad_finalizar.php'>Proceder com locação</a></h3>";
-}catch(PDOException $ex){
-    echo "Erro ".$ex->getMessage();
+// Handler to add a selected car to the current locacao
+include __DIR__ . '/conexao.php';
+include_once __DIR__ . '/csrf.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
-?></fieldset></div></div></body></html>
+try {
+    $token = $_POST['csrf_token'] ?? '';
+    if (!csrf_check($token)) {
+        echo '<h4>Requisição inválida (token CSRF).</h4>';
+        exit;
+    }
+
+    $item = filter_input(INPUT_POST, 'item', FILTER_VALIDATE_INT);
+    if ($item === false || $item === null) {
+        echo '<h4>Item inválido.</h4>';
+        exit;
+    }
+
+    // prefer locacao from session (set when cad_locacao.php inserted)
+    $codloc = $_SESSION['current_locacao'] ?? null;
+    if ($codloc === null) {
+        // fallback to POSTed locacao id if provided
+        $codloc = filter_input(INPUT_POST, 'locacao', FILTER_VALIDATE_INT);
+    }
+    if ($codloc === false || $codloc === null) {
+        echo '<h4>Nenhuma locação encontrada para associar o item.</h4>';
+        exit;
+    }
+
+    $ins = $conn->prepare('INSERT INTO carros_locacao (carro_locado, locacao) VALUES (:carro, :locacao)');
+    $ins->execute([':carro' => $item, ':locacao' => $codloc]);
+
+    echo '<h4>Item incluído com sucesso</h4>';
+    echo '<h3><a href="/locadora_m8/formulario/form_cad_itens.php">Selecionar outro veículo</a></h3><br>';
+    echo '<h3><a href="/locadora_m8/formulario/cad_finalizar.php">Proceder com locação</a></h3>';
+} catch (PDOException $ex) {
+    error_log('inserir_carros error: ' . $ex->getMessage());
+    echo '<h4>Ocorreu um erro ao processar a requisição. Contate o administrador.</h4>';
+}
+?>

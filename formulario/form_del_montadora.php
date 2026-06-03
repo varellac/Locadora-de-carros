@@ -10,20 +10,27 @@
 <div class="flex-container">
 <div id="box">
 <fieldset>
+<?php include __DIR__ . '/../controle/csrf.php'; ?>
 <form method="POST" action="../controle/del_montadora.php">
+    <?php echo csrf_input(); ?>
 <label>montadora:</label>
-    <?php
-        include ("../controle/conexao.php");
-        try{
-            $sql = 'SELECT * FROM montadora ORDER BY montadora';
-            print "<select name='cmb_montadora'>";
-            foreach($conn->query($sql) as $row){
-                print "<option value='".$row['cod_montadora']."'>".$row['montadora']."</option>";
-            }
-            print "</select>";
-        }catch(PDOException $ex){
-            echo 'Corra para as montanhas'.$ex->getMessage();
-        }
-    ?><br>
+            <?php
+                include ("../controle/conexao.php");
+                try{
+                    $sql = 'SELECT cod_montadora, montadora FROM montadora ORDER BY montadora';
+                    $stmt = $conn->query($sql);
+                    $rows = $stmt->fetchAll();
+                    print "<select name='cmb_montadora'>";
+                    foreach($rows as $row){
+                        $val = intval($row['cod_montadora']);
+                        $txt = htmlspecialchars($row['montadora'], ENT_QUOTES, 'UTF-8');
+                        print "<option value='".$val."'>".$txt."</option>";
+                    }
+                    print "</select>";
+                }catch(PDOException $ex){
+                    error_log('form_del_montadora error: '. $ex->getMessage());
+                    echo '<p>Erro ao carregar montadoras.</p>';
+                }
+            ?>
     <nav class="botoes"><input type="submit" value="Excluir"></nav>
 </form></fieldset></div></div></body></html>

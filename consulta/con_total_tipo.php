@@ -13,15 +13,17 @@
 <?php
 include ("../controle/conexao.php");
 try{
-	$sql = "SELECT t.tipo, SUM(c.valor) FROM carro c 
+	$sql = "SELECT t.tipo, SUM(c.valor) AS total_valor FROM carro c 
 	INNER JOIN tipo t ON t.cod_tipo=c.tipo_carro 
 	GROUP BY t.tipo ORDER BY SUM(c.valor) DESC";
 	foreach ($conn->query($sql) as $row) {
-	   print "<tr><td>".$row['tipo']."</td>
-              <td class='valores' width='25%'>R$ ".number_format($row['SUM(c.valor)'],2,",",".")."</td></tr>";
+	   $tipoEsc = htmlspecialchars($row['tipo'], ENT_QUOTES, 'UTF-8');
+	   print "<tr><td>".$tipoEsc."</td>
+			  <td class='valores' width='25%'>R$ ".number_format($row['total_valor'],2,",","")."</td></tr>";
 	}
 }catch(PDOException $ex){
-	echo 'Erro '. $ex->getMessage();
+	error_log('con_total_tipo error: ' . $ex->getMessage());
+	echo '<h4>Ocorreu um erro. Contate o administrador.</h4>';
 }
 ?>
 </table><br><a href='http://localhost/locadora_m8'>Voltar</a>

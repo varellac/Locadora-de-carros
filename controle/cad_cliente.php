@@ -12,16 +12,27 @@
 <fieldset>
 <?php
 include("conexao.php");
+include_once __DIR__ . '/csrf.php';
+$token = $_POST['csrf_token'] ?? '';
+if (!csrf_check($token)) {
+    echo '<h4>Requisição inválida (token CSRF).</h4>';
+    exit;
+}
 try{
-    $var_cliente=$_POST['txt_cliente'];
-    $var_bairro=$_POST['cmb_bairro'];
-    $var_cpf=$_POST['txt_cpf'];
-    $sql="INSERT INTO cliente(cliente,bairro_cliente,cpf) VALUES ('$var_cliente',$var_bairro,'$var_cpf')";
-    $conn->query($sql);
-    echo "<h4>cliente incluido com sucesso</h4>
-        <h3><a href='/locadora_m8'>Voltar</a></h3>";    
+    $var_cliente = isset($_POST['txt_cliente']) ? trim($_POST['txt_cliente']) : '';
+    $var_bairro = filter_input(INPUT_POST, 'cmb_bairro', FILTER_VALIDATE_INT);
+    $var_cpf = isset($_POST['txt_cpf']) ? trim($_POST['txt_cpf']) : '';
+    if ($var_cliente === '' || $var_bairro === false) {
+        echo '<h4>Dados inválidos. Verifique e tente novamente.</h4>';
+    } else {
+        $stmt = $conn->prepare('INSERT INTO cliente (cliente, bairro_cliente, cpf) VALUES (:cliente, :bairro, :cpf)');
+        $stmt->execute([':cliente' => $var_cliente, ':bairro' => $var_bairro, ':cpf' => $var_cpf]);
+        echo '<h4>Cliente incluído com sucesso</h4>';
+        echo '<h3><a href="/locadora_m8">Voltar</a></h3>';
+    }
 }catch(PDOException $ex){
-    echo "Erro ".$ex->getMessage();
+    error_log('cad_cliente error: ' . $ex->getMessage());
+    echo '<h4>Ocorreu um erro. Contate o administrador.</h4>';
 }
 ?>
 </fieldset></div></div></body></html>

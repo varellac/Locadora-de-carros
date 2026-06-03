@@ -10,7 +10,9 @@
 <div class="flex-container">
 <div id="box">
 <fieldset>
+<?php include __DIR__ . '/../controle/csrf.php'; ?>
 <form method="POST" action="../controle/cad_bairro.php">
+    <?php echo csrf_input(); ?>
     <label>Bairro:</label>
     <input type="text" name="txt_bairro"/>
     <nav class="botoes"><input type="submit" value="Cadastrar"></nav>

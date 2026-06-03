@@ -12,7 +12,9 @@
 <div class="flex-container">
 <div id="box">
 <fieldset>
+<?php include __DIR__ . '/../controle/csrf.php'; ?>
 <form method="POST" action="../controle/up_montadora.php">
+	<?php echo csrf_input(); ?>
 	<h3>Escolha o montadora a ser modificado</h3>
 <?php
 include ("../controle/conexao.php");
@@ -26,8 +28,21 @@ try{
 }catch(PDOException $ex){
 	echo 'Erro '. $ex->getMessage();
 }
-?>
-	<br><h3>Digite um novo nome para o montadora</h3><br>
-	<input type="text" name="txt_montadora">
-	<input type="submit" value="Atualizar">
-</fieldset></form></div></div></body></html>
+	<?php
+		include ("../controle/conexao.php");
+		try{
+			$sql = 'SELECT cod_montadora, montadora FROM montadora ORDER BY montadora';
+			$stmt = $conn->query($sql);
+			$rows = $stmt->fetchAll();
+			print "<select name='cmb_montadora'>";
+			foreach($rows as $row){
+				$val = intval($row['cod_montadora']);
+				$txt = htmlspecialchars($row['montadora'], ENT_QUOTES, 'UTF-8');
+				print "<option value='".$val."'>".$txt."</option>";
+			}
+			print "</select>";
+		}catch(PDOException $ex){
+			error_log('form_up_montadora error: '. $ex->getMessage());
+			echo '<p>Erro ao carregar montadoras.</p>';
+		}
+	?>

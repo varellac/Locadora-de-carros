@@ -10,20 +10,27 @@
 <div class="flex-container">
 <div id="box">
 <fieldset>
+<?php include __DIR__ . '/../controle/csrf.php'; ?>
 <form method="POST" action="../controle/del_cliente.php">
+    <?php echo csrf_input(); ?>
 <label>cliente:</label>
     <?php
         include ("../controle/conexao.php");
         try{
-            $sql = 'SELECT * FROM cliente ORDER BY cliente';
+            $sql = 'SELECT cod_cliente, cliente FROM cliente ORDER BY cliente';
+            $stmt = $conn->query($sql);
+            $rows = $stmt->fetchAll();
             print "<select name='cmb_cliente'>";
-            foreach($conn->query($sql) as $row){
-                print "<option value='".$row['cod_cliente']."'>".$row['cliente']."</option>";
+            foreach($rows as $row){
+                $val = intval($row['cod_cliente']);
+                $txt = htmlspecialchars($row['cliente'], ENT_QUOTES, 'UTF-8');
+                print "<option value='".$val."'>".$txt."</option>";
             }
             print "</select>";
         }catch(PDOException $ex){
-            echo 'Corra para as montanhas'.$ex->getMessage();
+            error_log('form_del_cliente error: '. $ex->getMessage());
+            echo '<p>Erro ao carregar clientes.</p>';
         }
-    ?><br>
+    ?>
     <nav class="botoes"><input type="submit" value="Excluir"></nav>
 </form></fieldset></div></div></body></html>

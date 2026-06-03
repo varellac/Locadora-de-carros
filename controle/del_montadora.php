@@ -12,20 +12,25 @@
 <fieldset>
 <?php
 include ("conexao.php");
-try{
-	$cod_montadora = $_POST['cmb_montadora'];
-	$sql = "UPDATE cliente set montadora_cliente=25 WHERE montadora_cliente='$cod_montadora'";
-	$conn->query($sql);
-}catch(PDOException $ex){
-	echo 'Erro '. $ex->getMessage();
+include_once __DIR__ . '/csrf.php';
+$token = $_POST['csrf_token'] ?? '';
+if (!csrf_check($token)) {
+	echo '<h4>Requisição inválida (token CSRF).</h4>';
+	exit;
 }
-try{	
-	$sql = "DELETE FROM montadora WHERE cod_montadora='$cod_montadora'";
-	$conn->query($sql);
-    echo "<h4>montadora excluido com sucesso</h4>
-    <h3><a href='/locadora_m31'>Voltar</a></h3>";
-}catch(PDOException $ex){
-	echo 'Erro '. $ex->getMessage();
+try{
+	$cod_montadora = filter_input(INPUT_POST, 'cmb_montadora', FILTER_VALIDATE_INT);
+	if ($cod_montadora === false || $cod_montadora === null) {
+		echo '<h4>Montadora inválida.</h4>';
+		exit;
+	}
+	$stmt = $conn->prepare('DELETE FROM montadora WHERE cod_montadora = :id');
+	$stmt->execute([':id' => $cod_montadora]);
+	echo '<h4>Montadora excluída com sucesso</h4>';
+	echo '<h3><a href="/locadora_m8">Voltar</a></h3>';
+} catch(PDOException $ex){
+	error_log('del_montadora error: ' . $ex->getMessage());
+	echo '<h4>Ocorreu um erro. Contate o administrador.</h4>';
 }
 ?>
 </fieldset></div></div></body></html>

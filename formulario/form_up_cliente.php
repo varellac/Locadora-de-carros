@@ -12,7 +12,9 @@
 <div class="flex-container">
 <div id="box">
 <fieldset>
+<?php include __DIR__ . '/../controle/csrf.php'; ?>
 <form method="POST" action="../controle/up_cliente.php">
+	<?php echo csrf_input(); ?>
 	<h3>Escolha o cliente a ser modificado</h3>
 <?php
 include ("../controle/conexao.php");
@@ -26,8 +28,21 @@ try{
 }catch(PDOException $ex){
 	echo 'Erro '. $ex->getMessage();
 }
-?>
-	<br><h3>Digite um novo nome para o cliente</h3><br>
-	<input type="text" name="txt_cliente">
-	<input type="submit" value="Atualizar">
-</fieldset></form></div></div></body></html>
+	<?php
+		include ("../controle/conexao.php");
+		try{
+			$sql = 'SELECT cod_bairro, bairro FROM bairro ORDER BY bairro';
+			$stmt = $conn->query($sql);
+			$rows = $stmt->fetchAll();
+			print "<select name='cmb_bairro'>";
+			foreach($rows as $row){
+				$val = intval($row['cod_bairro']);
+				$txt = htmlspecialchars($row['bairro'], ENT_QUOTES, 'UTF-8');
+				print "<option value='".$val."'>".$txt."</option>";
+			}
+			print "</select>";
+		}catch(PDOException $ex){
+			error_log('form_up_cliente error: '. $ex->getMessage());
+			echo '<p>Erro ao carregar bairros.</p>';
+		}
+	?>

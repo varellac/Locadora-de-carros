@@ -12,7 +12,9 @@
 <div class="flex-container">
 <div id="box">
 <fieldset>
-<form method='POST' action='/locadora_m8/consultas/con_recibo.php'>
+<?php include __DIR__ . '/../controle/csrf.php'; ?>
+<form method='POST' action='/locadora_m8/consulta/con_recibo.php'>
+  <?php echo csrf_input(); ?>
     <label>Selecione a locação desejada:</label>
 <?php
 include ("../controle/conexao.php");

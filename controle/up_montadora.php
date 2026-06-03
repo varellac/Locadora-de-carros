@@ -14,14 +14,25 @@
 <fieldset>
 <?php
 include ("conexao.php");
+include_once __DIR__ . '/csrf.php';
+$token = $_POST['csrf_token'] ?? '';
+if (!csrf_check($token)) {
+	echo '<h4>Requisição inválida (token CSRF).</h4>';
+	exit;
+}
 try{
-	$cod_montadora = $_POST['cmb_montadora'];	
-	$up_montadora = $_POST['txt_montadora'];
-	$sql = "UPDATE montadora set montadora='$up_montadora' WHERE cod_montadora=$cod_montadora";
-	$conn->query($sql);
-	echo "<p>montadora atualizado com sucesso!</p><a href='/locadora_m8'>Voltar</a>";
+	$cod_montadora = filter_input(INPUT_POST, 'cmb_montadora', FILTER_VALIDATE_INT);
+	$up_montadora = isset($_POST['txt_montadora']) ? trim($_POST['txt_montadora']) : '';
+	if ($cod_montadora === false || $up_montadora === '') {
+		echo '<h4>Dados inválidos.</h4>';
+		exit;
+	}
+	$stmt = $conn->prepare('UPDATE montadora SET montadora = :montadora WHERE cod_montadora = :id');
+	$stmt->execute([':montadora' => $up_montadora, ':id' => $cod_montadora]);
+	echo '<p>Montadora atualizada com sucesso!</p><a href="/locadora_m8">Voltar</a>';
 }catch(PDOException $ex){
-	echo 'Erro '. $ex->getMessage();
+	error_log('up_montadora error: ' . $ex->getMessage());
+	echo '<h4>Ocorreu um erro. Contate o administrador.</h4>';
 }
 ?>
 </fieldset></div></div></body></html>

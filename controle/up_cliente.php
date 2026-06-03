@@ -14,14 +14,25 @@
 <fieldset>
 <?php
 include ("conexao.php");
+include_once __DIR__ . '/csrf.php';
+$token = $_POST['csrf_token'] ?? '';
+if (!csrf_check($token)) {
+	echo '<h4>Requisição inválida (token CSRF).</h4>';
+	exit;
+}
 try{
-	$cod_cliente = $_POST['cmb_cliente'];	
-	$up_cliente = $_POST['txt_cliente'];
-	$sql = "UPDATE cliente set cliente='$up_cliente' WHERE cod_cliente=$cod_cliente";
-	$conn->query($sql);
-	echo "<p>cliente atualizado com sucesso!</p><a href='/locadora_m8'>Voltar</a>";
+	$cod_cliente = filter_input(INPUT_POST, 'cmb_cliente', FILTER_VALIDATE_INT);
+	$up_cliente = isset($_POST['txt_cliente']) ? trim($_POST['txt_cliente']) : '';
+	if ($cod_cliente === false || $up_cliente === '') {
+		echo '<h4>Dados inválidos.</h4>';
+		exit;
+	}
+	$stmt = $conn->prepare('UPDATE cliente SET cliente = :cliente WHERE cod_cliente = :id');
+	$stmt->execute([':cliente' => $up_cliente, ':id' => $cod_cliente]);
+	echo '<p>Cliente atualizado com sucesso!</p><a href="/locadora_m8">Voltar</a>';
 }catch(PDOException $ex){
-	echo 'Erro '. $ex->getMessage();
+	error_log('up_cliente error: ' . $ex->getMessage());
+	echo '<h4>Ocorreu um erro. Contate o administrador.</h4>';
 }
 ?>
 </fieldset></div></div></body></html>

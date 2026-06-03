@@ -12,14 +12,25 @@
 <fieldset>
 <?php
 include("conexao.php");
+include_once __DIR__ . '/csrf.php';
+$token = $_POST['csrf_token'] ?? '';
+if (!csrf_check($token)) {
+    echo '<h4>Requisição inválida (token CSRF).</h4>';
+    exit;
+}
 try{
-    $var_bairro=$_POST['txt_bairro'];
-    $sql="INSERT INTO bairro(bairro) VALUES ('$var_bairro')";
-    $conn->query($sql);
-    echo "<h4>Bairro incluido com sucesso</h4>
-        <h3><a href='/locadora_m8'>Voltar</a></h3>";    
+    $var_bairro = isset($_POST['txt_bairro']) ? trim($_POST['txt_bairro']) : '';
+    if ($var_bairro === '') {
+        echo '<h4>Nome do bairro inválido.</h4>';
+    } else {
+        $stmt = $conn->prepare('INSERT INTO bairro (bairro) VALUES (:bairro)');
+        $stmt->execute([':bairro' => $var_bairro]);
+        echo '<h4>Bairro incluído com sucesso</h4>';
+        echo '<h3><a href="/locadora_m8">Voltar</a></h3>';
+    }
 }catch(PDOException $ex){
-    echo "Erro ".$ex->getMessage();
+    error_log('cad_bairro error: ' . $ex->getMessage());
+    echo '<h4>Ocorreu um erro. Contate o administrador.</h4>';
 }
 ?>
 </fieldset></div></div></body></html>

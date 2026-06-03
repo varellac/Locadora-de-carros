@@ -13,18 +13,20 @@
 <?php
 include ("../controle/conexao.php");
 try{
-    $sql = "SELECT b.bairro, AVG(f.valor) FROM bairro b
+    $sql = "SELECT b.bairro, AVG(f.valor) AS media_valor FROM bairro b
     INNER JOIN cliente c ON b.cod_bairro=c.bairro_cliente 
     INNER JOIN locacao l ON c.cod_cliente=l.cliente_locacao
     INNER JOIN carros_locacao i ON i.locacao=l.cod_locacao     
     INNER JOIN carro f ON i.carro_locado=f.cod_carro
     GROUP BY b.bairro ORDER BY AVG(f.valor) DESC";
     foreach ($conn->query($sql) as $row) {
-        print "<tr><td>".$row['bairro']."</td>
-               <td class='valores' width='25%'>R$ ".number_format($row['AVG(f.valor)'],2,",",".")."</td></tr>";
+        $bairroEsc = htmlspecialchars($row['bairro'], ENT_QUOTES, 'UTF-8');
+        print "<tr><td>".$bairroEsc."</td>
+               <td class='valores' width='25%'>R$ ".number_format($row['media_valor'],2,",","")."</td></tr>";
     }
 }catch(PDOException $ex){
-	echo 'Erro '. $ex->getMessage();
+    error_log('con_media_bairro error: ' . $ex->getMessage());
+    echo '<h4>Ocorreu um erro. Contate o administrador.</h4>';
 }
 ?>
 </table><br><a href='http://localhost/locadora_m31'>Voltar</a>

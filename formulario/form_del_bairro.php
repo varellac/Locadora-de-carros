@@ -10,20 +10,27 @@
 <div class="flex-container">
 <div id="box">
 <fieldset>
+<?php include __DIR__ . '/../controle/csrf.php'; ?>
 <form method="POST" action="../controle/del_bairro.php">
+    <?php echo csrf_input(); ?>
 <label>Bairro:</label>
     <?php
         include ("../controle/conexao.php");
         try{
             $sql = 'SELECT * FROM bairro ORDER BY bairro';
+            $stmt = $conn->query($sql);
+            $rows = $stmt->fetchAll();
             print "<select name='cmb_bairro'>";
-            foreach($conn->query($sql) as $row){
-                print "<option value='".$row['cod_bairro']."'>".$row['bairro']."</option>";
+            foreach($rows as $row){
+                $val = intval($row['cod_bairro']);
+                $txt = htmlspecialchars($row['bairro'], ENT_QUOTES, 'UTF-8');
+                print "<option value='".$val."'>".$txt."</option>";
             }
             print "</select>";
         }catch(PDOException $ex){
-            echo 'Corra para as montanhas'.$ex->getMessage();
+            error_log('form_del_bairro error: '. $ex->getMessage());
+            echo '<p>Erro ao carregar bairros.</p>';
         }
-    ?><br>
+    ?>
     <nav class="botoes"><input type="submit" value="Excluir"></nav>
 </form></fieldset></div></div></body></html>

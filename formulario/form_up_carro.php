@@ -12,7 +12,9 @@
 <div class="flex-container">
 <div id="box">
 <fieldset>
+<?php include __DIR__ . '/../controle/csrf.php'; ?>
 <form method="POST" action="../controle/up_carro.php">
+	<?php echo csrf_input(); ?>
 	<h3>Escolha o carro a ser modificado</h3>
 <?php
 include ("../controle/conexao.php");
@@ -26,8 +28,21 @@ try{
 }catch(PDOException $ex){
 	echo 'Erro '. $ex->getMessage();
 }
-?>
-	<br><h3>Digite um novo nome para o carro</h3><br>
-	<input type="text" name="txt_carro">
-	<input type="submit" value="Atualizar">
-</fieldset></form></div></div></body></html>
+	<?php
+		include ("../controle/conexao.php");
+		try{
+			$sql = 'SELECT cod_tipo, tipo FROM tipo ORDER BY tipo';
+			$stmt = $conn->query($sql);
+			$rows = $stmt->fetchAll();
+			print "<select name='cmb_tipo'>";
+			foreach($rows as $row){
+				$val = intval($row['cod_tipo']);
+				$txt = htmlspecialchars($row['tipo'], ENT_QUOTES, 'UTF-8');
+				print "<option value='".$val."'>".$txt."</option>";
+			}
+			print "</select>";
+		}catch(PDOException $ex){
+			error_log('form_up_carro error: '. $ex->getMessage());
+			echo '<p>Erro ao carregar tipos.</p>';
+		}
+	?>

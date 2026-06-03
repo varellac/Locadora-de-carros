@@ -15,24 +15,46 @@ echo "<small>Locadora M8 - data: ".date('d/m/y')." - hora: ".date('H:i')."</smal
 <table class="tabrecibo"><tr><th>Carro</th><th>Valor R$</th></tr>	
 <?php
 include ("../controle/conexao.php");
+include_once __DIR__ . '/../controle/csrf.php';
 try{
-	$locacao=$_POST['locacao'];
-	$total=0.0;
-	$sql = "SELECT c.cliente, l.cod_locacao, i.carro_locado, f.carro, f.valor FROM cliente c 
-	INNER JOIN locacao l ON c.cod_cliente=l.cliente_locacao 
-	INNER JOIN carros_locacao i ON l.cod_locacao=i.locacao 
-	INNER JOIN carro f ON i.carro_locado=f.cod_carro 
-	WHERE locacao LIKE '$locacao'";
-	foreach ($conn->query($sql) as $row) {
-	   print "<tr class='linharecibo'><td>".$row['carro']."</td>
-			  <td class='valores'>".number_format($row['valor'],2,",",".")."</td></tr>";
+	$token = $_POST['csrf_token'] ?? '';
+	if (!csrf_check($token)) {
+		echo '<h4>Requisição inválida (token CSRF).</h4>';
+		exit;
+	}
+	$locacao = filter_input(INPUT_POST, 'locacao', FILTER_VALIDATE_INT);
+	if ($locacao === false || $locacao === null) {
+		echo '<h4>Locação inválida.</h4>';
+		exit;
+	}
+	$total = 0.0;
+	$sql = 'SELECT c.cliente, l.cod_locacao, i.carro_locado, f.carro, f.valor FROM cliente c '
+		 . 'INNER JOIN locacao l ON c.cod_cliente = l.cliente_locacao '
+		 . 'INNER JOIN carros_locacao i ON l.cod_locacao = i.locacao '
+		 . 'INNER JOIN carro f ON i.carro_locado = f.cod_carro '
+		 . 'WHERE l.cod_locacao = :locacao';
+	$stmt = $conn->prepare($sql);
+	$stmt->execute([':locacao' => $locacao]);
+	$rows = $stmt->fetchAll();
+	foreach ($rows as $row) {
+	   $carEsc = htmlspecialchars($row['carro'], ENT_QUOTES, 'UTF-8');
+	   echo "<tr class='linharecibo'><td>".$carEsc."</td>";
+	   echo "<td class='valores'>".number_format($row['valor'],2,',','.')."</td></tr>";
 		$total += $row['valor'];
 	}
-	print "<h3>RECIBO NÚMERO <u>".$row['cod_locacao']."</u></h3><h4>Cliente :<u>".$row['cliente'].
-			"</u> Total R$: <u><b>".number_format($total,2,",",".")."</b></u></h4>
+	if (!empty($rows)) {
+		$last = end($rows);
+		$codloc = htmlspecialchars($last['cod_locacao'], ENT_QUOTES, 'UTF-8');
+		$cliente = htmlspecialchars($last['cliente'], ENT_QUOTES, 'UTF-8');
+		print "<h3>RECIBO NÚMERO <u>".$codloc."</u></h3><h4>Cliente :<u>".$cliente.
+			"</u> Total R$: <u><b>".number_format($total,2,',','.')."</b></u></h4>
 			<h3>Carros selecionados:</h3></table><br>
 			<a href='http://localhost/projeto_locadora'>Voltar</a>";
+	} else {
+		echo '<h4>Nenhum item encontrado para essa locação.</h4>';
+	}
 }catch(PDOException $ex){
-	echo 'Erro '. $ex->getMessage();
+	error_log('con_recibo error: ' . $ex->getMessage());
+	echo '<h4>Ocorreu um erro. Contate o administrador.</h4>';
 }
 ?></fildset></div></div></body></html>

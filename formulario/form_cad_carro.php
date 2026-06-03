@@ -10,17 +10,23 @@
 <div class="flex-container">
 <div id="box">
 <fieldset>
+<?php include __DIR__ . '/../controle/csrf.php'; ?>
 <form method="POST" action="../controle/cad_carro.php">
     <table>
+    <?php echo csrf_input(); ?>
     <tr><td><label>Carro:</label></td><td><input type="text" name="txt_carro"/></td></tr>
     <tr><td><label>Tipo:</label></td>
         <td><?php
             include ("../controle/conexao.php");
             try{
                 $sql = 'SELECT * FROM tipo ORDER BY tipo';
+                $stmt = $conn->query($sql);
+                $rows = $stmt->fetchAll();
                 print "<select name='cmb_tipo'>";
-                foreach ($conn->query($sql) as $row) {
-                    print "<option value='".$row['cod_tipo']."'>".$row['tipo']."</option>";
+                foreach ($rows as $row) {
+                    $val = intval($row['cod_tipo']);
+                    $txt = htmlspecialchars($row['tipo'], ENT_QUOTES, 'UTF-8');
+                    print "<option value='".$val."'>".$txt."</option>";
                 }
                 print "</select>";
             }catch(PDOException $ex){
@@ -33,9 +39,13 @@
             include ("../controle/conexao.php");
             try{
                 $sql = 'SELECT * FROM montadora ORDER BY montadora';
+                $stmt = $conn->query($sql);
+                $rows = $stmt->fetchAll();
                 print "<select name='cmb_montadora'>";
-                foreach ($conn->query($sql) as $row) {
-                    print "<option value='".$row['cod_montadora']."'>".$row['montadora']."</option>";
+                foreach ($rows as $row) {
+                    $val = intval($row['cod_montadora']);
+                    $txt = htmlspecialchars($row['montadora'], ENT_QUOTES, 'UTF-8');
+                    print "<option value='".$val."'>".$txt."</option>";
                 }
                 print "</select>";
              }catch(PDOException $ex){

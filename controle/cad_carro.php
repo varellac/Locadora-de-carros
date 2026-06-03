@@ -12,20 +12,39 @@
 <fieldset>
 <?php
 include("conexao.php");
+include_once __DIR__ . '/csrf.php';
+// Validate CSRF token
+$token = $_POST['csrf_token'] ?? '';
+if (!csrf_check($token)) {
+    echo '<h4>Requisição inválida (token CSRF).</h4>';
+    exit;
+}
 try{
-    $var_carro=$_POST['txt_carro'];
-    $var_tipo=$_POST['cmb_tipo'];
-    $var_montadora=$_POST['cmb_montadora'];
-    $var_valor=$_POST['txt_valor'];
+    // Validate and sanitize input
+    $var_carro = isset($_POST['txt_carro']) ? trim($_POST['txt_carro']) : '';
+    $var_tipo = filter_input(INPUT_POST, 'cmb_tipo', FILTER_VALIDATE_INT);
+    $var_montadora = filter_input(INPUT_POST, 'cmb_montadora', FILTER_VALIDATE_INT);
+    $var_valor_raw = isset($_POST['txt_valor']) ? str_replace(',', '.', trim($_POST['txt_valor'])) : '';
+    $var_valor = is_numeric($var_valor_raw) ? (float)$var_valor_raw : 0.0;
 
-    $sql="INSERT INTO carro(carro,tipo_carro,montadora_carro,valor)
-          VALUES ('$var_carro',$var_tipo,$var_montadora,'$var_valor')";
-
-    $conn->query($sql);
-    echo "<h4>carro incluido com sucesso</h4>
-        <h3><a href='/locadora_m8'>Voltar</a></h3>";    
+    if ($var_carro === '' || $var_tipo === false || $var_montadora === false) {
+        echo '<h4>Dados inválidos. Verifique os campos e tente novamente.</h4>';
+    } else {
+        $sql = "INSERT INTO carro (carro, tipo_carro, montadora_carro, valor)
+                VALUES (:carro, :tipo, :montadora, :valor)";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([
+            ':carro' => $var_carro,
+            ':tipo' => $var_tipo,
+            ':montadora' => $var_montadora,
+            ':valor' => $var_valor,
+        ]);
+        echo '<h4>Carro incluído com sucesso</h4>';
+        echo '<h3><a href="/locadora_m8">Voltar</a></h3>';
+    }
 }catch(PDOException $ex){
-    echo "Erro ".$ex->getMessage();
+    error_log('cad_carro error: ' . $ex->getMessage());
+    echo '<h4>Ocorreu um erro ao processar a requisição. Contate o administrador.</h4>';
 }
 ?>
 </fieldset></div></div></body></html>

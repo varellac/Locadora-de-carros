@@ -1,3 +1,4 @@
+<?php include __DIR__ . '/../controle/csrf.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -11,6 +12,7 @@
 <div id="box">
 <fieldset>
 <form method="POST" action="../controle/cad_cliente.php">
+    <?php echo csrf_input(); ?>
     <label>Cliente:</label>
     <input type="text" name="txt_cliente"/><br><br>
     <label>Bairro:</label>
@@ -18,9 +20,13 @@
         include ("../controle/conexao.php");
         try{
             $sql = 'SELECT * FROM bairro ORDER BY bairro';
+            $stmt = $conn->query($sql);
+            $rows = $stmt->fetchAll();
             print "<select name='cmb_bairro'>";
-            foreach($conn->query($sql) as $row){
-                print "<option value='".$row['cod_bairro']."'>".$row['bairro']."</option>";
+            foreach($rows as $row){
+                $val = intval($row['cod_bairro']);
+                $txt = htmlspecialchars($row['bairro'], ENT_QUOTES, 'UTF-8');
+                print "<option value='".$val."'>".$txt."</option>";
             }
             print "</select>";
         }catch(PDOException $ex){

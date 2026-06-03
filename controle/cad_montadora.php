@@ -12,14 +12,25 @@
 <fieldset>
 <?php
 include("conexao.php");
+include_once __DIR__ . '/csrf.php';
+$token = $_POST['csrf_token'] ?? '';
+if (!csrf_check($token)) {
+    echo '<h4>Requisição inválida (token CSRF).</h4>';
+    exit;
+}
 try{
-    $var_montadora=$_POST['txt_montadora'];
-    $sql="INSERT INTO montadora(montadora) VALUES ('$var_montadora')";
-    $conn->query($sql);
-    echo "<h4>Montadora incluido com sucesso</h4>
-        <h3><a href='/locadora_m8'>Voltar</a></h3>";    
+    $var_montadora = isset($_POST['txt_montadora']) ? trim($_POST['txt_montadora']) : '';
+    if ($var_montadora === '') {
+        echo '<h4>Nome da montadora inválido.</h4>';
+    } else {
+        $stmt = $conn->prepare('INSERT INTO montadora (montadora) VALUES (:montadora)');
+        $stmt->execute([':montadora' => $var_montadora]);
+        echo '<h4>Montadora incluída com sucesso</h4>';
+        echo '<h3><a href="/locadora_m8">Voltar</a></h3>';
+    }
 }catch(PDOException $ex){
-    echo "Erro ".$ex->getMessage();
+    error_log('cad_montadora error: ' . $ex->getMessage());
+    echo '<h4>Ocorreu um erro. Contate o administrador.</h4>';
 }
 ?>
 </fieldset></div></div></body></html>
