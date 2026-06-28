@@ -1,3 +1,4 @@
+<?php
 $php_env = __DIR__ . '/../.env';
 if (file_exists($php_env)) {
     $lines = file($php_env, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
