@@ -1,19 +1,19 @@
+<?php include __DIR__ . '/../controle/csrf.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="utf-8" />
     <title>M8 Locadora</title>
-	<link rel="stylesheet" type="text/css" href="../estilo/geral.css">
+    <link rel="stylesheet" type="text/css" href="../estilo/geral.css">
 </head>
 <body>
 <h1>Exclusão de bairro</h1>
 <div class="flex-container">
 <div id="box">
 <fieldset>
-<?php include __DIR__ . '/../controle/csrf.php'; ?>
 <form method="POST" action="../controle/del_bairro.php">
     <?php echo csrf_input(); ?>
-<label>Bairro:</label>
+    <label>Bairro:</label>
     <?php
         include ("../controle/conexao.php");
         try{

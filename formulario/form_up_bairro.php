@@ -1,3 +1,4 @@
+<?php include __DIR__ . '/../controle/csrf.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -12,37 +13,27 @@
 <div class="flex-container">
 <div id="box">
 <fieldset>
-<?php include __DIR__ . '/../controle/csrf.php'; ?>
 <form method="POST" action="../controle/up_bairro.php">
 	<?php echo csrf_input(); ?>
 	<h3>Escolha o bairro a ser modificado</h3>
-<?php
-include ("../controle/conexao.php");
-try{
-  $sql = 'SELECT * FROM bairro ORDER BY bairro';
-  print "<select name='cmb_bairro'>";
-  foreach ($conn->query($sql) as $row) {
-    print "<option value='".$row['cod_bairro']."'>".$row['bairro']."</option>";
-  }
-  print "</select>";
-}catch(PDOException $ex){
-	echo 'Erro '. $ex->getMessage();
-}
 	<?php
-		include ("../controle/conexao.php");
+		include (__DIR__ . '/../controle/conexao.php');
 		try{
-			$sql = 'SELECT cod_bairro, bairro FROM bairro ORDER BY bairro';
-			$stmt = $conn->query($sql);
-			$rows = $stmt->fetchAll();
-			print "<select name='cmb_bairro'>";
-			foreach($rows as $row){
+			$stmt = $conn->query('SELECT cod_bairro, bairro FROM bairro ORDER BY bairro');
+			echo "<select name='cmb_bairro'>";
+			foreach($stmt as $row){
 				$val = intval($row['cod_bairro']);
 				$txt = htmlspecialchars($row['bairro'], ENT_QUOTES, 'UTF-8');
-				print "<option value='".$val."'>".$txt."</option>";
+				echo "<option value='".$val."'>".$txt."</option>";
 			}
-			print "</select>";
+			echo "</select>";
 		}catch(PDOException $ex){
 			error_log('form_up_bairro error: '. $ex->getMessage());
 			echo '<p>Erro ao carregar bairros.</p>';
 		}
 	?>
+	<label>Novo nome:</label>
+	<input type="text" name="txt_bairro" />
+	<nav class="botoes"><input type="submit" value="Atualizar"></nav>
+</form>
+</fieldset></div></div></body></html>
