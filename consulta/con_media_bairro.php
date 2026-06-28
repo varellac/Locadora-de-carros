@@ -1,3 +1,4 @@
+﻿<?php include_once __DIR__ . '/../controle/verifica_funcionario.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -5,11 +6,11 @@
 	<link rel='stylesheet' type='text/css' href='../estilo/geral.css'>
 </head>
 <body>
-<h1>Média de locacoes por bairro</h1>
+<h1>MÃ©dia de locacoes por bairro</h1>
 <div class="flex-container">
 <div id="box">
 <fieldset>
-	<table border="1"><tr><th width="50%">Bairro</th><th>Média de valores locados</th></tr>
+	<table border="1"><tr><th width="50%">Bairro</th><th>MÃ©dia de valores locados</th></tr>
 <?php
 include ("../controle/conexao.php");
 try{
@@ -31,3 +32,4 @@ try{
 ?>
 </table><br><a href='http://localhost/locadora_m31'>Voltar</a>
 </fieldset></div></div></body></html>
+

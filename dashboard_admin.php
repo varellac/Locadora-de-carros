@@ -1,3 +1,4 @@
+<?php include __DIR__ . '/controle/verifica_funcionario.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -5,15 +6,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="estilo/geral.css">
-    <title>M8 Locadora de Veículos</title>
+    <title>Painel Administrativo - M8</title>
 </head>
 <body>
 <header>
     <div class="header-container">
-        <h1>M8 LOCADORA</h1>
+        <h1>M8 LOCADORA - ADMIN</h1>
         <nav>
-            <a href="formulario/projeto_cad_login.html">Cadastro</a>
-            <a href="formulario/projeto_login.html">Login</a>
+            <span style="color:#fff; margin-right: 20px;">Bem-vindo, Admin!</span>
+            <a href="controle/logout.php" style="background: rgba(255,0,0,0.4); padding: 8px 16px; border-radius: 8px; color: white;">Sair</a>
         </nav>
     </div>
 </header>

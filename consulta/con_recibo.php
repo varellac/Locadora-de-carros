@@ -1,3 +1,4 @@
+﻿<?php include_once __DIR__ . '/../controle/verifica_funcionario.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -5,7 +6,7 @@
 	<link rel='stylesheet' type='text/css' href='../estilo/geral.css'>
 </head>
 <body>
-<h1>Recido de locações</h1>
+<h1>Recido de locaÃ§Ãµes</h1>
 <div class="flex-container">
 <div id="box" >
 <fieldset>
@@ -19,12 +20,12 @@ include_once __DIR__ . '/../controle/csrf.php';
 try{
 	$token = $_POST['csrf_token'] ?? '';
 	if (!csrf_check($token)) {
-		echo '<h4>Requisição inválida (token CSRF).</h4>';
+		echo '<h4>RequisiÃ§Ã£o invÃ¡lida (token CSRF).</h4>';
 		exit;
 	}
 	$locacao = filter_input(INPUT_POST, 'locacao', FILTER_VALIDATE_INT);
 	if ($locacao === false || $locacao === null) {
-		echo '<h4>Locação inválida.</h4>';
+		echo '<h4>LocaÃ§Ã£o invÃ¡lida.</h4>';
 		exit;
 	}
 	$total = 0.0;
@@ -46,12 +47,12 @@ try{
 		$last = end($rows);
 		$codloc = htmlspecialchars($last['cod_locacao'], ENT_QUOTES, 'UTF-8');
 		$cliente = htmlspecialchars($last['cliente'], ENT_QUOTES, 'UTF-8');
-		print "<h3>RECIBO NÚMERO <u>".$codloc."</u></h3><h4>Cliente :<u>".$cliente.
+		print "<h3>RECIBO NÃšMERO <u>".$codloc."</u></h3><h4>Cliente :<u>".$cliente.
 			"</u> Total R$: <u><b>".number_format($total,2,',','.')."</b></u></h4>
 			<h3>Carros selecionados:</h3></table><br>
 			<a href='http://localhost/projeto_locadora'>Voltar</a>";
 	} else {
-		echo '<h4>Nenhum item encontrado para essa locação.</h4>';
+		echo '<h4>Nenhum item encontrado para essa locaÃ§Ã£o.</h4>';
 	}
 }catch(PDOException $ex){
 	error_log('con_recibo error: ' . $ex->getMessage());

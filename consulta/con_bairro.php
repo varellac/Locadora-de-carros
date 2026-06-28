@@ -1,3 +1,4 @@
+﻿<?php include_once __DIR__ . '/../controle/verifica_funcionario.php'; ?>
 <?php
 include ("conexao.php");
 try{

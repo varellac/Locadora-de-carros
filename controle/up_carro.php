@@ -1,3 +1,4 @@
+﻿<?php include_once __DIR__ . '/../controle/verifica_funcionario.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -8,7 +9,7 @@
 	<link rel='stylesheet' type='text/css' href='../estilo/geral.css'>
 </head>
 <body>
-<h1>Atualização de carro</h1>
+<h1>AtualizaÃ§Ã£o de carro</h1>
 <div class="flex-container">
 <div id="box" class="barra">
 <fieldset>
@@ -17,7 +18,7 @@ include ("conexao.php");
 include_once __DIR__ . '/csrf.php';
 $token = $_POST['csrf_token'] ?? '';
 if (!csrf_check($token)) {
-	echo '<h4>Requisição inválida (token CSRF).</h4>';
+	echo '<h4>RequisiÃ§Ã£o invÃ¡lida (token CSRF).</h4>';
 	exit;
 }
 try{
@@ -28,7 +29,7 @@ try{
 	$up_valor_raw = isset($_POST['txt_valor']) ? str_replace(',', '.', trim($_POST['txt_valor'])) : '';
 	$up_valor = is_numeric($up_valor_raw) ? (float)$up_valor_raw : 0.0;
 	if ($cod_carro === false || $up_carro === '' || $up_tipo === false || $up_montadora === false) {
-		echo '<h4>Dados inválidos.</h4>';
+		echo '<h4>Dados invÃ¡lidos.</h4>';
 		exit;
 	}
 	$stmt = $conn->prepare('UPDATE carro SET carro = :carro, tipo_carro = :tipo, montadora_carro = :montadora, valor = :valor WHERE cod_carro = :id');

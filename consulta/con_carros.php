@@ -1,3 +1,4 @@
+﻿<?php include_once __DIR__ . '/../controle/verifica_funcionario.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -17,7 +18,7 @@ include_once __DIR__ . '/../controle/csrf.php';
 try{
 	$token = $_POST['csrf_token'] ?? '';
 	if (!csrf_check($token)) {
-		echo '<h4>Requisição inválida (token CSRF).</h4>';
+		echo '<h4>RequisiÃ§Ã£o invÃ¡lida (token CSRF).</h4>';
 		exit;
 	}
 	$carro = isset($_POST['txt_carro']) ? trim($_POST['txt_carro']) : '';

@@ -1,3 +1,4 @@
+﻿<?php include_once __DIR__ . '/../controle/verifica_funcionario.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -8,7 +9,7 @@
 	<link rel='stylesheet' type='text/css' href='../estilo/geral.css'>
 </head>
 <body>
-<h1>Atualização de montadora</h1>
+<h1>AtualizaÃ§Ã£o de montadora</h1>
 <div class="flex-container">
 <div id="box">
 <fieldset>

@@ -1,21 +1,22 @@
+﻿<?php include_once __DIR__ . '/../controle/verifica_funcionario.php'; ?>
 <?php
 include(__DIR__ . '/conexao.php');
 include_once __DIR__ . '/csrf.php';
 $token = $_POST['csrf_token'] ?? '';
 if (!csrf_check($token)) {
-	$message = '<h4>Requisição inválida (token CSRF).</h4>';
+	$message = '<h4>RequisiÃ§Ã£o invÃ¡lida (token CSRF).</h4>';
 } else {
 	try{
 		$cod_bairro = filter_input(INPUT_POST, 'cmb_bairro', FILTER_VALIDATE_INT);
 		if ($cod_bairro === false || $cod_bairro === null) {
-			$message = '<h4>Bairro inválido.</h4>';
+			$message = '<h4>Bairro invÃ¡lido.</h4>';
 		} else {
 			$stmt = $conn->prepare('UPDATE cliente SET bairro_cliente = :default WHERE bairro_cliente = :bairro');
 			$stmt->execute([':default' => 25, ':bairro' => $cod_bairro]);
 
 			$del = $conn->prepare('DELETE FROM bairro WHERE cod_bairro = :bairro');
 			$del->execute([':bairro' => $cod_bairro]);
-			$message = '<h4>Bairro excluído com sucesso</h4>';
+			$message = '<h4>Bairro excluÃ­do com sucesso</h4>';
 			$message .= '<h3><a href="/locadora_m8">Voltar</a></h3>';
 		}
 	}catch(PDOException $ex){
@@ -32,7 +33,7 @@ if (!csrf_check($token)) {
 	<link rel="stylesheet" type="text/css" href="../estilo/geral.css">    
 </head>
 <body>
-<h1>Exclusão de bairro</h1>
+<h1>ExclusÃ£o de bairro</h1>
 <div class="flex-container">
 <div id="box">
 <fieldset>

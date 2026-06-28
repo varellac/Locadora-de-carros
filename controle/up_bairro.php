@@ -1,15 +1,16 @@
+﻿<?php include_once __DIR__ . '/../controle/verifica_funcionario.php'; ?>
 <?php
 include(__DIR__ . '/conexao.php');
 include_once __DIR__ . '/csrf.php';
 $token = $_POST['csrf_token'] ?? '';
 if (!csrf_check($token)) {
-	$message = '<h4>Requisição inválida (token CSRF).</h4>';
+	$message = '<h4>RequisiÃ§Ã£o invÃ¡lida (token CSRF).</h4>';
 } else {
 	try{
 		$cod_bairro = filter_input(INPUT_POST, 'cmb_bairro', FILTER_VALIDATE_INT);
 		$up_bairro = isset($_POST['txt_bairro']) ? trim($_POST['txt_bairro']) : '';
 		if ($cod_bairro === false || $up_bairro === '') {
-			$message = '<h4>Dados inválidos.</h4>';
+			$message = '<h4>Dados invÃ¡lidos.</h4>';
 		} else {
 			$stmt = $conn->prepare('UPDATE bairro SET bairro = :bairro WHERE cod_bairro = :id');
 			$stmt->execute([':bairro' => $up_bairro, ':id' => $cod_bairro]);
@@ -31,7 +32,7 @@ if (!csrf_check($token)) {
 	<link rel='stylesheet' type='text/css' href='../estilo/geral.css'>
 </head>
 <body>
-<h1>Atualização de bairro</h1>
+<h1>AtualizaÃ§Ã£o de bairro</h1>
 <div class="flex-container">
 <div id="box" class="barra">
 <fieldset>

@@ -1,3 +1,4 @@
+﻿<?php include_once __DIR__ . '/../controle/verifica_funcionario.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -16,7 +17,7 @@ include_once __DIR__ . '/csrf.php';
 // Validate CSRF token
 $token = $_POST['csrf_token'] ?? '';
 if (!csrf_check($token)) {
-    echo '<h4>Requisição inválida (token CSRF).</h4>';
+    echo '<h4>RequisiÃ§Ã£o invÃ¡lida (token CSRF).</h4>';
     exit;
 }
 try{
@@ -28,7 +29,7 @@ try{
     $var_valor = is_numeric($var_valor_raw) ? (float)$var_valor_raw : 0.0;
 
     if ($var_carro === '' || $var_tipo === false || $var_montadora === false) {
-        echo '<h4>Dados inválidos. Verifique os campos e tente novamente.</h4>';
+        echo '<h4>Dados invÃ¡lidos. Verifique os campos e tente novamente.</h4>';
     } else {
         $sql = "INSERT INTO carro (carro, tipo_carro, montadora_carro, valor)
                 VALUES (:carro, :tipo, :montadora, :valor)";
@@ -39,12 +40,12 @@ try{
             ':montadora' => $var_montadora,
             ':valor' => $var_valor,
         ]);
-        echo '<h4>Carro incluído com sucesso</h4>';
+        echo '<h4>Carro incluÃ­do com sucesso</h4>';
         echo '<h3><a href="/locadora_m8">Voltar</a></h3>';
     }
 }catch(PDOException $ex){
     error_log('cad_carro error: ' . $ex->getMessage());
-    echo '<h4>Ocorreu um erro ao processar a requisição. Contate o administrador.</h4>';
+    echo '<h4>Ocorreu um erro ao processar a requisiÃ§Ã£o. Contate o administrador.</h4>';
 }
 ?>
 </fieldset></div></div></body></html>

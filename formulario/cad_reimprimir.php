@@ -1,3 +1,4 @@
+﻿<?php include_once __DIR__ . '/../controle/verifica_funcionario.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -15,7 +16,7 @@
 <?php include __DIR__ . '/../controle/csrf.php'; ?>
 <form method='POST' action='/locadora_m8/consulta/con_recibo.php'>
   <?php echo csrf_input(); ?>
-    <label>Selecione a locação desejada:</label>
+    <label>Selecione a locaÃ§Ã£o desejada:</label>
 <?php
 include ("../controle/conexao.php");
 try{

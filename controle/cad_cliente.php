@@ -1,3 +1,4 @@
+﻿<?php include_once __DIR__ . '/../controle/verifica_funcionario.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -15,7 +16,7 @@ include("conexao.php");
 include_once __DIR__ . '/csrf.php';
 $token = $_POST['csrf_token'] ?? '';
 if (!csrf_check($token)) {
-    echo '<h4>Requisição inválida (token CSRF).</h4>';
+    echo '<h4>RequisiÃ§Ã£o invÃ¡lida (token CSRF).</h4>';
     exit;
 }
 try{
@@ -23,11 +24,11 @@ try{
     $var_bairro = filter_input(INPUT_POST, 'cmb_bairro', FILTER_VALIDATE_INT);
     $var_cpf = isset($_POST['txt_cpf']) ? trim($_POST['txt_cpf']) : '';
     if ($var_cliente === '' || $var_bairro === false) {
-        echo '<h4>Dados inválidos. Verifique e tente novamente.</h4>';
+        echo '<h4>Dados invÃ¡lidos. Verifique e tente novamente.</h4>';
     } else {
         $stmt = $conn->prepare('INSERT INTO cliente (cliente, bairro_cliente, cpf) VALUES (:cliente, :bairro, :cpf)');
         $stmt->execute([':cliente' => $var_cliente, ':bairro' => $var_bairro, ':cpf' => $var_cpf]);
-        echo '<h4>Cliente incluído com sucesso</h4>';
+        echo '<h4>Cliente incluÃ­do com sucesso</h4>';
         echo '<h3><a href="/locadora_m8">Voltar</a></h3>';
     }
 }catch(PDOException $ex){

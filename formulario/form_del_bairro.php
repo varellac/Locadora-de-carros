@@ -1,3 +1,4 @@
+﻿<?php include_once __DIR__ . '/../controle/verifica_funcionario.php'; ?>
 <?php include __DIR__ . '/../controle/csrf.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -7,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="../estilo/geral.css">
 </head>
 <body>
-<h1>Exclusão de bairro</h1>
+<h1>ExclusÃ£o de bairro</h1>
 <div class="flex-container">
 <div id="box">
 <fieldset>

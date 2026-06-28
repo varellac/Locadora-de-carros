@@ -1,3 +1,4 @@
+﻿<?php include_once __DIR__ . '/../controle/verifica_funcionario.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -36,7 +37,7 @@ if ($locacao === null) {
 if ($locacao) {
   echo "<input type='hidden' name='locacao' value='" . htmlspecialchars($locacao, ENT_QUOTES, 'UTF-8') . "'>";
 } else {
-  echo '<p>Nenhuma locação disponível para finalizar.</p>';
+  echo '<p>Nenhuma locaÃ§Ã£o disponÃ­vel para finalizar.</p>';
 }
 ?>
     <input type='submit' name='Recibo' value='ok'>

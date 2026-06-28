@@ -1,3 +1,4 @@
+﻿<?php include_once __DIR__ . '/../controle/verifica_funcionario.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -8,7 +9,7 @@
 	<link rel='stylesheet' type='text/css' href='../estilo/geral.css'>
 </head>
 <body>
-<h1>Atualização de montadora</h1>
+<h1>AtualizaÃ§Ã£o de montadora</h1>
 <div class="flex-container">
 <div id="box" class="barra">
 <fieldset>
@@ -17,14 +18,14 @@ include ("conexao.php");
 include_once __DIR__ . '/csrf.php';
 $token = $_POST['csrf_token'] ?? '';
 if (!csrf_check($token)) {
-	echo '<h4>Requisição inválida (token CSRF).</h4>';
+	echo '<h4>RequisiÃ§Ã£o invÃ¡lida (token CSRF).</h4>';
 	exit;
 }
 try{
 	$cod_montadora = filter_input(INPUT_POST, 'cmb_montadora', FILTER_VALIDATE_INT);
 	$up_montadora = isset($_POST['txt_montadora']) ? trim($_POST['txt_montadora']) : '';
 	if ($cod_montadora === false || $up_montadora === '') {
-		echo '<h4>Dados inválidos.</h4>';
+		echo '<h4>Dados invÃ¡lidos.</h4>';
 		exit;
 	}
 	$stmt = $conn->prepare('UPDATE montadora SET montadora = :montadora WHERE cod_montadora = :id');
