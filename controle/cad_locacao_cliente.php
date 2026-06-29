@@ -4,35 +4,56 @@ include __DIR__ . '/conexao.php';
 
 $id_cliente = $_SESSION['id_cliente'];
 $carro_id = filter_input(INPUT_POST, 'cmb_carro', FILTER_VALIDATE_INT);
-$data = $_POST['txt_data_locacao'] ?? '';
+$data_inicio = $_POST['txt_data_locacao'] ?? '';
+$data_fim = $_POST['txt_data_devolucao'] ?? '';
 
-if (!$carro_id || empty($data)) {
-    echo "<!DOCTYPE html><html lang='pt-BR'><head><link rel='stylesheet' href='../estilo/geral.css'></head><body><div class='flex-container'><div id='box' class='card'><h2>Dados inválidos!</h2><br><a href='../area_cliente.php'>Voltar</a></div></div></body></html>";
+if (!$carro_id || empty($data_inicio) || empty($data_fim)) {
+    header("Location: ../area_cliente.php?erro=dados_invalidos");
     exit;
 }
 
+// Validate dates
+$d1 = new DateTime($data_inicio);
+$d2 = new DateTime($data_fim);
+if ($d2 <= $d1) {
+    header("Location: ../area_cliente.php?erro=data_invalida");
+    exit;
+}
+
+$dias = $d2->diff($d1)->days;
+
 try {
-    $conn->beginTransaction();
-    
     // Fetch car price
-    $stmt = $conn->prepare("SELECT valor FROM carro WHERE cod_carro = ?");
+    $stmt = $conn->prepare("SELECT valor, carro FROM carro WHERE cod_carro = ?");
     $stmt->execute([$carro_id]);
     $carro = $stmt->fetch();
-    $valor = $carro['valor'];
+    if (!$carro) {
+        header("Location: ../area_cliente.php?erro=carro_nao_encontrado");
+        exit;
+    }
+
+    $valor_diaria = $carro['valor'];
+    $valor_total = round($dias * $valor_diaria, 2);
+
+    $conn->beginTransaction();
 
     // Insert locacao
-    $stmt = $conn->prepare("INSERT INTO locacao (cliente_locacao, data_locacao) VALUES (?, ?)");
-    $stmt->execute([$id_cliente, $data]);
+    $stmt = $conn->prepare("INSERT INTO locacao (cliente_locacao, data_locacao, data_devolucao) VALUES (?, ?, ?)");
+    $stmt->execute([$id_cliente, $data_inicio, $data_fim]);
     $locacao_id = $conn->lastInsertId();
 
     // Insert carros_locacao
     $stmt = $conn->prepare("INSERT INTO carros_locacao (carro_locado, locacao, valor) VALUES (?, ?, ?)");
-    $stmt->execute([$carro_id, $locacao_id, $valor]);
+    $stmt->execute([$carro_id, $locacao_id, $valor_total]);
 
     $conn->commit();
 
-    echo "<!DOCTYPE html><html lang='pt-BR'><head><link rel='stylesheet' href='../estilo/geral.css'></head><body><div class='flex-container'><div id='box' class='card'><h2>Reserva confirmada com sucesso! 🚗</h2><br><a href='../area_cliente.php'>Voltar para minha área</a></div></div></body></html>";
+    // Redirect to success page with details
+    $nome_carro = urlencode($carro['carro']);
+    header("Location: ../area_cliente.php?sucesso=1&carro={$nome_carro}&dias={$dias}&total={$valor_total}");
 } catch (PDOException $ex) {
     $conn->rollBack();
-    echo "Erro: " . $ex->getMessage();
+    error_log("cad_locacao_cliente error: " . $ex->getMessage());
+    header("Location: ../area_cliente.php?erro=erro_interno");
+    exit;
 }
