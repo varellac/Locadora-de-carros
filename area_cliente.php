@@ -65,7 +65,11 @@
             <h2 style="color: white; margin-bottom: 8px;">Alugar um Veículo</h2>
             <p style="color: var(--text-secondary); margin-bottom: 24px; font-size: 0.9rem;">Escolha o carro, selecione as datas e confirme sua reserva.</p>
 
-            <?php if (isset($_GET['sucesso'])): 
+            <?php if (isset($_GET['bem_vindo'])): ?>
+            <div style="background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.4); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; color: #c084fc; font-weight: 600;">
+                🎉 Conta criada com sucesso! Seja bem-vindo(a) à M8 Locadora!
+            </div>
+            <?php elseif (isset($_GET['sucesso'])): 
                 $nome_carro = htmlspecialchars(urldecode($_GET['carro'] ?? ''));
                 $dias = intval($_GET['dias'] ?? 0);
                 $total = number_format(floatval($_GET['total'] ?? 0), 2, ',', '.');
